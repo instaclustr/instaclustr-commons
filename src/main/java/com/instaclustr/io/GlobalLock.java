@@ -19,7 +19,7 @@ public class GlobalLock {
         if (lockDirectory != null) {
             this.lockDirectory = lockDirectory;
         } else {
-            this.lockDirectory = Paths.get("/var/lock/backup-restore");
+            this.lockDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
         }
         createDirectories(this.lockDirectory);
     }
