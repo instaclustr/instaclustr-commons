@@ -16,7 +16,7 @@
     <guice.version>4.2.2</guice.version>
     <picocli.version>4.0.1</picocli.version>
     <validation-api.version>2.0.1.Final</validation-api.version>
-    <hibernate-validator.version>6.0.11.Final</hibernate-validator.version>
+    <hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
     <jakarta-el.version>3.0.2</jakarta-el.version>
     <apache.commons.lang3>3.4</apache.commons.lang3>
     <commons-io.version>2.6</commons-io.version>
