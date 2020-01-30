@@ -5,7 +5,6 @@ import static com.instaclustr.picocli.typeconverter.CassandraJMXServiceURLTypeCo
 import javax.management.remote.JMXServiceURL;
 
 import com.instaclustr.picocli.typeconverter.CassandraJMXServiceURLTypeConverter;
-import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 /**

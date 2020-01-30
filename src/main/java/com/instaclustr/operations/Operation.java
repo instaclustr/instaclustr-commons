@@ -48,7 +48,7 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
 
     public State state = State.PENDING;
     public Throwable failureCause;
-    public float progress = Float.NaN;
+    public float progress = 0;
     public Instant startTime, completionTime;
 
     protected Operation(final RequestT request) {

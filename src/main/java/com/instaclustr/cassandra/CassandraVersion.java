@@ -1,4 +1,4 @@
-package jmx.org.apache.cassandra;
+package com.instaclustr.cassandra;
 
 /*
  * Copyright DataStax, Inc.

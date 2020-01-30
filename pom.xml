@@ -5,7 +5,7 @@
 
   <groupId>com.instaclustr</groupId>
   <artifactId>commons</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 
   <name>Instaclustr commons</name>
   <description>Common classes and utilities integrated with various projects</description>
@@ -17,6 +17,8 @@
     <picocli.version>4.0.1</picocli.version>
     <validation-api.version>2.0.1.Final</validation-api.version>
     <hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
+    <kubernetes.client.java.version>6.0.1</kubernetes.client.java.version>
+    <cassandra.driver.version>4.4.0</cassandra.driver.version>
     <jakarta-el.version>3.0.2</jakarta-el.version>
     <apache.commons.lang3>3.4</apache.commons.lang3>
     <commons-io.version>2.6</commons-io.version>
@@ -26,6 +28,7 @@
     <testng.version>6.14.3</testng.version>
     <mockito.version>2.23.4</mockito.version>
     <awaitility.version>3.1.6</awaitility.version>
+    <version.embedded.cassandra>3.0.2</version.embedded.cassandra>
 
     <maven.source.plugin.version>3.1.0</maven.source.plugin.version>
     <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
@@ -163,6 +166,18 @@
       <version>${commons-io.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>io.kubernetes</groupId>
+      <artifactId>client-java</artifactId>
+      <version>${kubernetes.client.java.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.datastax.oss</groupId>
+      <artifactId>java-driver-core</artifactId>
+      <version>${cassandra.driver.version}</version>
+    </dependency>
+
     <!-- logging -->
 
     <dependency>
@@ -178,6 +193,13 @@
     </dependency>
 
     <!-- test dependencies -->
+
+    <dependency>
+      <groupId>com.github.nosan</groupId>
+      <artifactId>embedded-cassandra</artifactId>
+      <version>${version.embedded.cassandra}</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.testng</groupId>
