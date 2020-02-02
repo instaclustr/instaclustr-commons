@@ -40,7 +40,11 @@ public final class KubernetesCassandraConfigReader implements CassandraConfigRea
                 throw new NullPointerException();
             }
 
-            return new StringReader(new String(bytes.get()));
+            final String secret = new String(bytes.get());
+
+            logger.debug(format("Read Secret %s on key %s:\n%s", SIDECAR_SECRET_NAME, CASSANDRA_CONFIG_NAME, secret));
+
+            return new StringReader(secret);
         } catch (final Exception ex) {
             logger.warn(format("There is not secret %s with key %s, returning empty config.", SIDECAR_SECRET_NAME, CASSANDRA_CONFIG_NAME));
             return new StringReader(EMPTY_CONFIG);
@@ -55,6 +59,8 @@ public final class KubernetesCassandraConfigReader implements CassandraConfigRea
             if (!data.isPresent()) {
                 throw new NullPointerException();
             }
+
+            logger.debug(format("Read ConfigMap %s on key %s:\n%s", SIDECAR_CONFIG_NAME, CASSANDRA_CONFIG_NAME, data.get()));
 
             return new StringReader(data.get());
         } catch (final Exception ex) {
