@@ -5,7 +5,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.instaclustr.cassandra.service.CassandraConfigReader;
+import com.instaclustr.cassandra.service.CassandraWaiter;
 import com.instaclustr.cassandra.service.CqlSessionService;
+import com.instaclustr.cassandra.service.DefaultCassandraWaiter;
 import com.instaclustr.cassandra.service.DefaultCqlSessionService;
 import com.instaclustr.cassandra.service.kubernetes.Kubernetes;
 import com.instaclustr.cassandra.service.kubernetes.KubernetesCassandraConfigReader;
@@ -35,6 +37,8 @@ public class CassandraModule extends AbstractModule {
         } else {
             bind(CqlSessionService.class).to(DefaultCqlSessionService.class);
         }
+
+        bind(CassandraWaiter.class).to(DefaultCassandraWaiter.class);
     }
 
     @Singleton

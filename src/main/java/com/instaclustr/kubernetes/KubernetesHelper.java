@@ -19,4 +19,8 @@ public class KubernetesHelper {
     public static String getHostname() throws UnknownHostException {
         return InetAddress.getLocalHost().getHostName();
     }
+
+    public static String getPodName() throws UnknownHostException {
+        return getHostname().split("\\.")[0];
+    }
 }

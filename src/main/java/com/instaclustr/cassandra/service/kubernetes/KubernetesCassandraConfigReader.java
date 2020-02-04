@@ -1,5 +1,6 @@
 package com.instaclustr.cassandra.service.kubernetes;
 
+import static com.instaclustr.cassandra.service.kubernetes.CassandraKubernetesHelper.CASSANDRA_CONFIG_NAME;
 import static java.lang.String.format;
 
 import java.io.StringReader;
@@ -20,10 +21,6 @@ public final class KubernetesCassandraConfigReader implements CassandraConfigRea
 
     private static final String EMPTY_CONFIG = "datastax-java-driver {}";
 
-    private static final String SIDECAR_SECRET_NAME = "cassandra-operator-sidecar-secret";
-    private static final String SIDECAR_CONFIG_NAME = "cassandra-operator-sidecar-config";
-    private static final String CASSANDRA_CONFIG_NAME = "cassandra-config";
-
     private final Provider<CoreV1Api> coreV1ApiProvider;
 
     @Inject
@@ -33,8 +30,11 @@ public final class KubernetesCassandraConfigReader implements CassandraConfigRea
 
     @Override
     public StringReader getSecretReader() {
+
+        final String sidecarSecretName = CassandraKubernetesHelper.getCassandraSidecarSecretName();
+
         try {
-            Optional<byte[]> bytes = new SecretReader(coreV1ApiProvider).read(SIDECAR_SECRET_NAME, CASSANDRA_CONFIG_NAME);
+            Optional<byte[]> bytes = new SecretReader(coreV1ApiProvider).read(sidecarSecretName, CASSANDRA_CONFIG_NAME);
 
             if (!bytes.isPresent()) {
                 throw new NullPointerException();
@@ -42,29 +42,32 @@ public final class KubernetesCassandraConfigReader implements CassandraConfigRea
 
             final String secret = new String(bytes.get());
 
-            logger.debug(format("Read Secret %s on key %s:\n%s", SIDECAR_SECRET_NAME, CASSANDRA_CONFIG_NAME, secret));
+            logger.debug(format("Read Secret %s on key %s:\n%s", sidecarSecretName, CASSANDRA_CONFIG_NAME, secret));
 
             return new StringReader(secret);
         } catch (final Exception ex) {
-            logger.warn(format("There is not secret %s with key %s, returning empty config.", SIDECAR_SECRET_NAME, CASSANDRA_CONFIG_NAME));
+            logger.warn(format("There is not secret %s with key %s, returning empty config.", sidecarSecretName, CASSANDRA_CONFIG_NAME));
             return new StringReader(EMPTY_CONFIG);
         }
     }
 
     @Override
     public StringReader getConfigMapReader() {
+
+        final String sidecarConfigMapName = CassandraKubernetesHelper.getCassandraSidecarConfigMapName();
+
         try {
-            Optional<String> data = new ConfigMapReader(coreV1ApiProvider).read(SIDECAR_CONFIG_NAME, CASSANDRA_CONFIG_NAME);
+            Optional<String> data = new ConfigMapReader(coreV1ApiProvider).read(sidecarConfigMapName, CASSANDRA_CONFIG_NAME);
 
             if (!data.isPresent()) {
                 throw new NullPointerException();
             }
 
-            logger.debug(format("Read ConfigMap %s on key %s:\n%s", SIDECAR_CONFIG_NAME, CASSANDRA_CONFIG_NAME, data.get()));
+            logger.debug(format("Read ConfigMap %s on key %s:\n%s", sidecarConfigMapName, CASSANDRA_CONFIG_NAME, data.get()));
 
             return new StringReader(data.get());
         } catch (final Exception ex) {
-            logger.warn(format("There is not config map %s with key %s, returning empty config.", SIDECAR_CONFIG_NAME, CASSANDRA_CONFIG_NAME));
+            logger.warn(format("There is not config map %s with key %s, returning empty config.", sidecarConfigMapName, CASSANDRA_CONFIG_NAME));
             return new StringReader(EMPTY_CONFIG);
         }
     }
