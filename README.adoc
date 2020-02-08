@@ -2,4 +2,6 @@
 
 image:https://img.shields.io/maven-central/v/com.instaclustr/commons.svg?label=Maven%20Central[link="https://search.maven.org/search?q=g:%22com.instaclustr%22%20AND%20a:%22commons%22"]
 
+image:https://circleci.com/gh/instaclustr/instaclustr-commons.svg?style=svg["Instaclustr",link="https://circleci.com/gh/instaclustr/instaclustr-commons"]
+
 This library gathers all basic functionality for projects across Instaclustr's open source initiatives.
