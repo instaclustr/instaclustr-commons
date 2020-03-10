@@ -54,7 +54,6 @@ public class CassandraModule extends AbstractModule {
     }
 
     @Provides
-    @Singleton
     CassandraVersion provideCassandraVersion(final CassandraJMXService cassandraJMXService) throws Exception {
         return CassandraVersion.parse(cassandraJMXService.doWithStorageServiceMBean(new FunctionWithEx<StorageServiceMBean, String>() {
             @Override
