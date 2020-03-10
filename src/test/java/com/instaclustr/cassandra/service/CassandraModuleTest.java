@@ -59,7 +59,7 @@ public class CassandraModuleTest {
         assertNotNull(cassandraJMXService);
 
         EmbeddedCassandraFactory embeddedCassandraFactory = new EmbeddedCassandraFactory();
-        embeddedCassandraFactory.setArtifact(Artifact.ofVersion("3.11.5"));
+        embeddedCassandraFactory.setArtifact(Artifact.ofVersion("3.11.6"));
         embeddedCassandraFactory.getJvmOptions().add("-Xmx1g");
         embeddedCassandraFactory.getJvmOptions().add("-Xms1g");
         Cassandra cassandraToBackup = embeddedCassandraFactory.create();
