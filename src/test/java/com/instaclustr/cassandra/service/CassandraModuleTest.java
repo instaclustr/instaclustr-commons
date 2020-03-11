@@ -28,6 +28,8 @@ import org.testng.annotations.Test;
 
 public class CassandraModuleTest {
 
+    private static final String CASSANDRA_VERSION = System.getProperty("backup.tests.cassandra.version", "3.11.6");
+
     @Inject
     private CassandraJMXConnectionInfo cassandraJMXConnectionInfo;
 
@@ -59,7 +61,7 @@ public class CassandraModuleTest {
         assertNotNull(cassandraJMXService);
 
         EmbeddedCassandraFactory embeddedCassandraFactory = new EmbeddedCassandraFactory();
-        embeddedCassandraFactory.setArtifact(Artifact.ofVersion("3.11.6"));
+        embeddedCassandraFactory.setArtifact(Artifact.ofVersion(CASSANDRA_VERSION));
         embeddedCassandraFactory.getJvmOptions().add("-Xmx1g");
         embeddedCassandraFactory.getJvmOptions().add("-Xms1g");
         Cassandra cassandraToBackup = embeddedCassandraFactory.create();
