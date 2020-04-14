@@ -22,7 +22,7 @@
     <jakarta-el.version>3.0.2</jakarta-el.version>
     <apache.commons.lang3>3.4</apache.commons.lang3>
     <commons-io.version>2.6</commons-io.version>
-    <jul.version>1.7.16</jul.version>
+    <slf4j.version>1.7.30</slf4j.version>
     <logback.version>1.2.3</logback.version>
 
     <testng.version>6.14.3</testng.version>
@@ -179,15 +179,10 @@
     <!-- logging -->
 
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>${jul.version}</version>
+      <artifactId>slf4j-nop</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
