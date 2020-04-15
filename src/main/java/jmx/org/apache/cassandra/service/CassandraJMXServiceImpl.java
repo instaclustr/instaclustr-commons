@@ -1,20 +1,12 @@
 package jmx.org.apache.cassandra.service;
 
-import static javax.management.JMX.newMBeanProxy;
-import static jmx.org.apache.cassandra.CassandraObjectNames.STORAGE_SERVICE_MBEAN_NAME;
-
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-
-import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import com.instaclustr.operations.FunctionWithEx;
-import jmx.org.apache.cassandra.JMXUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
+import jmx.org.apache.cassandra.CassandraObjectNames;
+import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
+import jmx.org.apache.cassandra.service.cassandra4.Cassandra4StorageServiceMBean;
 
 public class CassandraJMXServiceImpl implements CassandraJMXService {
-
-    private static final Logger logger = LoggerFactory.getLogger(CassandraJMXService.class);
 
     private final CassandraJMXConnectionInfo jmxConnectionInfo;
 
@@ -22,34 +14,18 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
         this.jmxConnectionInfo = jmxConnectionInfo;
     }
 
+    @Override
+    public <T> T doWithCassandra4StorageServiceMBean(FunctionWithEx<Cassandra4StorageServiceMBean, T> func) throws Exception {
+        return doWithStorageServiceMBean(func, Cassandra4StorageServiceMBean.class, CassandraObjectNames.V4.STORAGE_SERVICE_MBEAN_NAME, jmxConnectionInfo);
+    }
+
+    @Override
+    public <T> T doWithCassandra3StorageServiceMBean(FunctionWithEx<StorageServiceMBean, T> func) throws Exception {
+        return doWithStorageServiceMBean(func);
+    }
+
+    @Override
     public <T> T doWithStorageServiceMBean(FunctionWithEx<StorageServiceMBean, T> func) throws Exception {
-
-        JMXConnector jmxConnector = null;
-        StorageServiceMBean storageServiceMBean = null;
-
-        try {
-            jmxConnector = JMXUtils.getJmxConnector(jmxConnectionInfo);
-
-            jmxConnector.connect();
-
-            MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
-
-            storageServiceMBean = newMBeanProxy(mBeanServerConnection, STORAGE_SERVICE_MBEAN_NAME, StorageServiceMBean.class);
-
-            return func.apply(storageServiceMBean);
-        } finally {
-            if (jmxConnector != null) {
-                try {
-                    jmxConnector.close();
-                } catch (Exception ex) {
-                    logger.error("Unable to close JMXConnector's connection.");
-                } finally {
-                    jmxConnector = null;
-                }
-            }
-            if (storageServiceMBean != null) {
-                storageServiceMBean = null;
-            }
-        }
+        return doWithStorageServiceMBean(func, StorageServiceMBean.class, CassandraObjectNames.V3.STORAGE_SERVICE_MBEAN_NAME, jmxConnectionInfo);
     }
 }

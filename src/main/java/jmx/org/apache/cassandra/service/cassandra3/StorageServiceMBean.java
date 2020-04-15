@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jmx.org.apache.cassandra.service;
+package jmx.org.apache.cassandra.service.cassandra3;
 
 import javax.management.NotificationEmitter;
 import javax.management.openmbean.TabularData;
