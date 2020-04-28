@@ -9,7 +9,7 @@ public class KubernetesHelper {
     public static final String KUBERNETES_SERVICE_PORT = "KUBERNETES_SERVICE_PORT";
 
     public static boolean isRunningInKubernetes() {
-        return System.getenv(KUBERNETES_SERVICE_HOST) != null && System.getenv(KUBERNETES_SERVICE_PORT) != null;
+        return System.getenv(KUBERNETES_SERVICE_HOST) != null && System.getenv(KUBERNETES_SERVICE_PORT) != null && !isPretendingToRunOutsideKubernetes();
     }
 
     public static boolean isRunningAsClient() {
@@ -18,6 +18,10 @@ public class KubernetesHelper {
 
     public static String getHostname() throws UnknownHostException {
         return InetAddress.getLocalHost().getHostName();
+    }
+
+    public static boolean isPretendingToRunOutsideKubernetes() {
+        return Boolean.parseBoolean(System.getProperty("pretend.not.running.in.kubernetes", "false"));
     }
 
     public static String getPodName() throws UnknownHostException {
