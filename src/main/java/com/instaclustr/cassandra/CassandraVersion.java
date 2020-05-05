@@ -75,7 +75,15 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
     }
 
     public static boolean isThree(final CassandraVersion version) {
+        return version.major == 3;
+    }
+
+    public static boolean isThreeZero(final CassandraVersion version) {
         return version.major == 3 && version.minor == 0;
+    }
+
+    public static boolean isFour(final CassandraVersion version) {
+        return version.major == 4;
     }
 
     /**
