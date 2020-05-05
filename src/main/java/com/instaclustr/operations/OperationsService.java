@@ -5,30 +5,33 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.instaclustr.threading.Executors;
+import com.instaclustr.threading.Executors.ExecutorServiceSupplier;
 
 public class OperationsService extends AbstractIdleService {
+
     private final ListeningExecutorService executorService;
     private final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType;
     private final Map<UUID, Operation> operations;
 
     @Inject
     public OperationsService(final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType,
-                             final @OperationsMap Map<UUID, Operation> operations) {
+                             final @OperationsMap Map<UUID, Operation> operations,
+                             final ExecutorServiceSupplier executorServiceSupplier) {
         this.operationFactoriesByRequestType = operationFactoriesByRequestType;
         this.operations = operations;
-
-        // TODO: custom executor implementation that allows for concurrent operations of different types
-        this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+        this.executorService = executorServiceSupplier.get(Integer.parseInt(System.getProperty("instaclustr.commons.operations.executor.size",
+                                                                                               Executors.DEFAULT_CONCURRENT_CONNECTIONS.toString())));
     }
 
     @Override
-    protected void startUp() throws Exception {}
+    protected void startUp() throws Exception {
+    }
 
     @Override
     protected void shutDown() throws Exception {
