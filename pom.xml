@@ -37,6 +37,7 @@
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <git.command.plugin.version>2.2.4</git.command.plugin.version>
+    <javadoc.skip>true</javadoc.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -241,6 +242,10 @@
             <goals>
               <goal>jar</goal>
             </goals>
+            <configuration>
+              <skip>${javadoc.skip}</skip>
+              <failOnError>false</failOnError>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -295,6 +300,9 @@
     <!-- Use this profile when releasing. For example: "mvn clean deploy -P release" -->
     <profile>
       <id>release</id>
+      <properties>
+        <javadoc.skip>false</javadoc.skip>
+      </properties>
       <build>
         <plugins>
           <plugin>
