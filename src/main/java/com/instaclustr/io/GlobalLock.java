@@ -32,13 +32,14 @@ public class GlobalLock {
         final Path globalLockFile = this.lockDirectory.resolve("global-transfer-lock");
 
         // attempt to acquire the global lock -- prevents concurrent uploads/downloads across processes
-        try (final FileChannel globalLockChannel = FileChannel.open(globalLockFile, WRITE, CREATE);
-            final FileLock globalLock = (waitForLock ? globalLockChannel.lock() : globalLockChannel.tryLock())) {
-            if (globalLock == null) {
-                throw new RuntimeException(String.format("Unable to acquire global transfer lock (%s). Is another backup or restore running?", globalLockFile));
-            }
+        final FileChannel globalLockChannel = FileChannel.open(globalLockFile, WRITE, CREATE);
 
-            return globalLock;
+        final FileLock globalLock = (waitForLock ? globalLockChannel.lock() : globalLockChannel.tryLock());
+
+        if (globalLock == null) {
+            throw new RuntimeException(String.format("Unable to acquire global transfer lock (%s). Is another backup or restore running?", globalLockFile));
         }
+
+        return globalLock;
     }
 }

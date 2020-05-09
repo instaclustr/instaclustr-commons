@@ -56,6 +56,11 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
                            jmxConnectionInfo);
     }
 
+    @Override
+    public CassandraJMXConnectionInfo getCassandraJmxConnectionInfo() {
+        return jmxConnectionInfo;
+    }
+
     private String getColumnFamilyMBeanObjectNameQuery(final String keyspace, final String columnFamily) {
         final String type = columnFamily.contains(".") ? "IndexColumnFamilies" : "ColumnFamilies";
         return "org.apache.cassandra.db:type=*" + type + ",keyspace=" + keyspace + ",columnfamily=" + columnFamily;

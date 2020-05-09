@@ -33,6 +33,12 @@ public interface CassandraJMXService {
 
     default <T, U> T doWithMBean(FunctionWithEx<U, T> func,
                                  Class<U> mbeanClass,
+                                 ObjectName objectName) throws Exception {
+        return doWithMBean(func, mbeanClass, objectName, getCassandraJmxConnectionInfo());
+    }
+
+    default <T, U> T doWithMBean(FunctionWithEx<U, T> func,
+                                 Class<U> mbeanClass,
                                  ObjectName objectName,
                                  CassandraJMXConnectionInfo jmxConnectionInfo) throws Exception {
 
@@ -72,4 +78,6 @@ public interface CassandraJMXService {
             return func.apply(newMBeanProxy(mBeanServerConnection, objectNames.iterator().next(), mbeanClass));
         }
     }
+
+    CassandraJMXConnectionInfo getCassandraJmxConnectionInfo();
 }
