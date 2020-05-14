@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
 
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
@@ -13,6 +14,16 @@ import org.slf4j.LoggerFactory;
 public class FileUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
+
+    public static void createFile(final Path file, final FileAttribute<?>... attributes) throws Exception {
+
+        if (Files.exists(file)) {
+            return;
+        }
+
+        createDirectory(file.getParent());
+        Files.createFile(file, attributes);
+    }
 
     public static void cleanDirectory(final File dir) {
 

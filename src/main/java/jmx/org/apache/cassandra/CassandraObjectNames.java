@@ -11,6 +11,7 @@ public final class CassandraObjectNames {
         public static final ObjectName FAILURE_DETECTOR_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.net:type=FailureDetector");
         public static final ObjectName ENDPOINT_SNITCH_INFO_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=EndpointSnitchInfo");
         public static final ObjectName STORAGE_SERVICE_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=StorageService");
+        public static final ObjectName STORAGE_PROXY_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=StorageProxy");
         public static final ObjectName MESSAGING_SERVICE = ObjectNames.create("org.apache.cassandra.net:type=MessagingService");
         public static final ObjectName COMPACTION_MANAGER = ObjectNames.create("org.apache.cassandra.db:type=CompactionManager");
         public static final ObjectName AES_OBJECT_NAME = ObjectNames.create("org.apache.cassandra.internal:type=AntiEntropySessions");
@@ -23,6 +24,7 @@ public final class CassandraObjectNames {
         public static final ObjectName FAILURE_DETECTOR_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.net:type=FailureDetector");
         public static final ObjectName ENDPOINT_SNITCH_INFO_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=EndpointSnitchInfo");
         public static final ObjectName STORAGE_SERVICE_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=StorageService");
+        public static final ObjectName STORAGE_PROXY_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=StorageProxy");
         public static final ObjectName MESSAGING_SERVICE = ObjectNames.create("org.apache.cassandra.net:type=MessagingService");
         public static final ObjectName COMPACTION_MANAGER = ObjectNames.create("org.apache.cassandra.db:type=CompactionManager");
         public static final ObjectName AES_OBJECT_NAME = ObjectNames.create("org.apache.cassandra.internal:type=AntiEntropySessions");
