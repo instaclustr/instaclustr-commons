@@ -1,12 +1,19 @@
 package com.instaclustr.operations;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -18,15 +25,18 @@ public class OperationsService extends AbstractIdleService {
     private final ListeningExecutorService executorService;
     private final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType;
     private final Map<UUID, Operation> operations;
+    private final BiMap<Class<? extends OperationRequest>, String> typeMappings;
 
     @Inject
     public OperationsService(final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType,
                              final @OperationsMap Map<UUID, Operation> operations,
-                             final ExecutorServiceSupplier executorServiceSupplier) {
+                             final ExecutorServiceSupplier executorServiceSupplier,
+                             final Map<String, Class<? extends OperationRequest>> typeMappings) {
         this.operationFactoriesByRequestType = operationFactoriesByRequestType;
         this.operations = operations;
         this.executorService = executorServiceSupplier.get(Integer.parseInt(System.getProperty("instaclustr.commons.operations.executor.size",
                                                                                                Executors.DEFAULT_CONCURRENT_CONNECTIONS.toString())));
+        this.typeMappings = ImmutableBiMap.copyOf(typeMappings).inverse();
     }
 
     @Override
@@ -59,5 +69,41 @@ public class OperationsService extends AbstractIdleService {
 
     public Optional<Operation> operation(final UUID id) {
         return Optional.ofNullable(operations.get(id));
+    }
+
+    public boolean noneIsRunning() {
+        return allRunning().isEmpty();
+    }
+
+    public boolean isAnyRunning() {
+        return !allRunning().isEmpty();
+    }
+
+    public boolean noneRunningOfTypes(final String... types) {
+        return Arrays.stream(types).allMatch(type -> allRunningOfType(type).isEmpty());
+    }
+
+    public List<UUID> allRunningOfType(final String type) {
+        return filterOperations(operation -> isRunning(operation.id) && type.equals(typeMappings.get(operation.request)));
+    }
+
+    public List<UUID> allRunning() {
+        return filterOperations(operation -> !operation.state.isTerminalState());
+    }
+
+    public boolean isRunning(final UUID id) {
+        return filterOperations(value -> !value.state.isTerminalState()).contains(id);
+    }
+
+    private List<UUID> filterOperations(final Predicate<Operation> predicate) {
+        final List<UUID> filteredOperations = new ArrayList<>();
+
+        for (final Entry<UUID, Operation> operation : operations().entrySet()) {
+            if (predicate.test(operation.getValue())) {
+                filteredOperations.add(operation.getKey());
+            }
+        }
+
+        return filteredOperations;
     }
 }

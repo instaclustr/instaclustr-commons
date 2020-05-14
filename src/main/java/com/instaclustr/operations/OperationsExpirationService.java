@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 public class OperationsExpirationService extends AbstractScheduledService {
+
     private final long expirationPeriodInSeconds;
     private final Map<UUID, Operation> operations;
 

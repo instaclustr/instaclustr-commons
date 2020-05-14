@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * A version number in the form X.Y.Z with optional pre-release labels and build metadata.
  *
@@ -37,7 +40,7 @@ import java.util.regex.Pattern;
 public class CassandraVersion implements Comparable<CassandraVersion> {
 
     private static final String VERSION_REGEXP =
-            "(\\d+)\\.(\\d+)(\\.\\d+)?(\\.\\d+)?([~\\-]\\w[.\\w]*(?:\\-\\w[.\\w]*)*)?(\\+[.\\w]+)?";
+        "(\\d+)\\.(\\d+)(\\.\\d+)?(\\.\\d+)?([~\\-]\\w[.\\w]*(?:\\-\\w[.\\w]*)*)?(\\+[.\\w]+)?";
     private static final Pattern pattern = Pattern.compile(VERSION_REGEXP);
 
     private final int major;
@@ -48,12 +51,13 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
     private final String[] preReleases;
     private final String build;
 
-    private CassandraVersion(final int major,
-                             final int minor,
-                             final int patch,
-                             final int dsePatch,
-                             final String[] preReleases,
-                             final String build) {
+    @JsonCreator
+    public CassandraVersion(@JsonProperty("major") final int major,
+                            @JsonProperty("minor") final int minor,
+                            @JsonProperty("patch") final int patch,
+                            @JsonProperty("dsePatch") final int dsePatch,
+                            @JsonProperty("preReleases") final String[] preReleases,
+                            @JsonProperty("build") final String build) {
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -99,11 +103,14 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
      * @throws IllegalArgumentException if the provided string does not represent a valid version.
      */
     public static CassandraVersion parse(String version) {
-        if (version == null) return null;
+        if (version == null) {
+            return null;
+        }
 
         Matcher matcher = pattern.matcher(version);
-        if (!matcher.matches())
+        if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid version number: " + version);
+        }
 
         try {
             int major = Integer.parseInt(matcher.group(1));
@@ -111,24 +118,24 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
 
             String pa = matcher.group(3);
             int patch =
-                    pa == null || pa.isEmpty()
-                            ? 0
-                            : Integer.parseInt(
-                            pa.substring(1)); // dropping the initial '.' since it's included this time
+                pa == null || pa.isEmpty()
+                    ? 0
+                    : Integer.parseInt(
+                        pa.substring(1)); // dropping the initial '.' since it's included this time
 
             String dse = matcher.group(4);
             int dsePatch =
-                    dse == null || dse.isEmpty()
-                            ? -1
-                            : Integer.parseInt(
-                            dse.substring(1)); // dropping the initial '.' since it's included this time
+                dse == null || dse.isEmpty()
+                    ? -1
+                    : Integer.parseInt(
+                        dse.substring(1)); // dropping the initial '.' since it's included this time
 
             String pr = matcher.group(5);
             String[] preReleases =
-                    pr == null || pr.isEmpty()
-                            ? null
-                            : pr.substring(1)
-                            .split("\\-"); // drop initial '-' or '~' then split on the remaining ones
+                pr == null || pr.isEmpty()
+                    ? null
+                    : pr.substring(1)
+                        .split("\\-"); // drop initial '-' or '~' then split on the remaining ones
 
             String bl = matcher.group(6);
             String build = bl == null || bl.isEmpty() ? null : bl.substring(1); // drop the initial '+'
@@ -176,7 +183,7 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
      * @return the DSE patch version number, i.e. D in X.Y.Z.D, or -1 if the version number is not
      * from DSE.
      */
-    public int getDSEPatch() {
+    public int getDsePatch() {
         return dsePatch;
     }
 
@@ -215,31 +222,57 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
 
     @Override
     public int compareTo(CassandraVersion other) {
-        if (major < other.major) return -1;
-        if (major > other.major) return 1;
-
-        if (minor < other.minor) return -1;
-        if (minor > other.minor) return 1;
-
-        if (patch < other.patch) return -1;
-        if (patch > other.patch) return 1;
-
-        if (dsePatch < 0) {
-            if (other.dsePatch >= 0) return -1;
-        } else {
-            if (other.dsePatch < 0) return 1;
-
-            // Both are >= 0
-            if (dsePatch < other.dsePatch) return -1;
-            if (dsePatch > other.dsePatch) return 1;
+        if (major < other.major) {
+            return -1;
+        }
+        if (major > other.major) {
+            return 1;
         }
 
-        if (preReleases == null) return other.preReleases == null ? 0 : 1;
-        if (other.preReleases == null) return -1;
+        if (minor < other.minor) {
+            return -1;
+        }
+        if (minor > other.minor) {
+            return 1;
+        }
+
+        if (patch < other.patch) {
+            return -1;
+        }
+        if (patch > other.patch) {
+            return 1;
+        }
+
+        if (dsePatch < 0) {
+            if (other.dsePatch >= 0) {
+                return -1;
+            }
+        } else {
+            if (other.dsePatch < 0) {
+                return 1;
+            }
+
+            // Both are >= 0
+            if (dsePatch < other.dsePatch) {
+                return -1;
+            }
+            if (dsePatch > other.dsePatch) {
+                return 1;
+            }
+        }
+
+        if (preReleases == null) {
+            return other.preReleases == null ? 0 : 1;
+        }
+        if (other.preReleases == null) {
+            return -1;
+        }
 
         for (int i = 0; i < Math.min(preReleases.length, other.preReleases.length); i++) {
             int cmp = preReleases[i].compareTo(other.preReleases[i]);
-            if (cmp != 0) return cmp;
+            if (cmp != 0) {
+                return cmp;
+            }
         }
 
         return Integer.compare(preReleases.length, other.preReleases.length);
@@ -251,17 +284,21 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
 
     @Override
     public boolean equals(Object other) {
-        if (other == this) return true;
-        if (!(other instanceof CassandraVersion)) return false;
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof CassandraVersion)) {
+            return false;
+        }
         CassandraVersion that = (CassandraVersion) other;
         return this.major == that.major
-                && this.minor == that.minor
-                && this.patch == that.patch
-                && this.dsePatch == that.dsePatch
-                && (this.preReleases == null
-                ? that.preReleases == null
-                : Arrays.equals(this.preReleases, that.preReleases))
-                && CassandraVersion.equal(this.build, that.build);
+            && this.minor == that.minor
+            && this.patch == that.patch
+            && this.dsePatch == that.dsePatch
+            && (this.preReleases == null
+            ? that.preReleases == null
+            : Arrays.equals(this.preReleases, that.preReleases))
+            && CassandraVersion.equal(this.build, that.build);
     }
 
     @Override
@@ -273,11 +310,17 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(major).append('.').append(minor).append('.').append(patch);
-        if (dsePatch >= 0) sb.append('.').append(dsePatch);
-        if (preReleases != null) {
-            for (String preRelease : preReleases) sb.append('-').append(preRelease);
+        if (dsePatch >= 0) {
+            sb.append('.').append(dsePatch);
         }
-        if (build != null) sb.append('+').append(build);
+        if (preReleases != null) {
+            for (String preRelease : preReleases) {
+                sb.append('-').append(preRelease);
+            }
+        }
+        if (build != null) {
+            sb.append('+').append(build);
+        }
         return sb.toString();
     }
 }
