@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class OperationRequest {
 
+    public String type;
+
     static class TypeIdResolver extends MapBackedTypeIdResolver<OperationRequest> {
         @Inject
         public TypeIdResolver(final Map<String, Class<? extends OperationRequest>> typeMappings) {
