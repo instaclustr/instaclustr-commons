@@ -1,6 +1,7 @@
 package com.instaclustr.io;
 
 
+import static java.lang.String.format;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -28,6 +29,10 @@ public class GlobalLock {
         return waitForLock(false);
     }
 
+    public FileLock waitForLock() throws Exception {
+        return waitForLock(true);
+    }
+
     public FileLock waitForLock(final boolean waitForLock) throws Exception {
         final Path globalLockFile = this.lockDirectory.resolve("global-transfer-lock");
 
@@ -37,7 +42,7 @@ public class GlobalLock {
         final FileLock globalLock = (waitForLock ? globalLockChannel.lock() : globalLockChannel.tryLock());
 
         if (globalLock == null) {
-            throw new RuntimeException(String.format("Unable to acquire global transfer lock (%s). Is another backup or restore running?", globalLockFile));
+            throw new RuntimeException(format("Unable to acquire global transfer lock (%s). Is another backup or restore running?", globalLockFile));
         }
 
         return globalLock;

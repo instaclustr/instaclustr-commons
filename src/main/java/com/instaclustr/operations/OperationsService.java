@@ -57,6 +57,8 @@ public class OperationsService extends AbstractIdleService {
         final OperationFactory operationFactory = operationFactoriesByRequestType.get(request.getClass());
 
         final Operation operation = operationFactory.createOperation(request);
+        operation.type = typeMappings.get(request.getClass());
+        operation.request.type = operation.type;
 
         submitOperation(operation);
 
@@ -83,8 +85,22 @@ public class OperationsService extends AbstractIdleService {
         return Arrays.stream(types).allMatch(type -> allRunningOfType(type).isEmpty());
     }
 
+    public List<UUID> allOfTypeAndState(final String type, final Operation.State... state) {
+        return filterOperations(operation -> {
+            if (operation.request == null) {
+                return false;
+            }
+
+            if (!type.equals(typeMappings.get(operation.request))) {
+                return false;
+            }
+
+            return Arrays.asList(state).contains(operation.state);
+        });
+    }
+
     public List<UUID> allRunningOfType(final String type) {
-        return filterOperations(operation -> isRunning(operation.id) && type.equals(typeMappings.get(operation.request)));
+        return filterOperations(operation -> isRunning(operation.id) && type.equals(typeMappings.get(operation.request.getClass())));
     }
 
     public List<UUID> allRunning() {
