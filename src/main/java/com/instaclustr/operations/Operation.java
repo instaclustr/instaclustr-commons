@@ -1,13 +1,18 @@
 package com.instaclustr.operations;
 
+import static java.lang.String.format;
+
 import javax.inject.Inject;
+import java.io.Closeable;
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -20,9 +25,12 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("WeakerAccess")
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "type", include = As.EXISTING_PROPERTY)
 @JsonTypeIdResolver(Operation.TypeIdResolver.class)
-public abstract class Operation<RequestT extends OperationRequest> implements Runnable {
+public abstract class Operation<RequestT extends OperationRequest> implements Runnable, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(Operation.class);
+
+    @JsonIgnore
+    private final AtomicBoolean shouldCancel = new AtomicBoolean(false);
 
     @JsonProperty
     public String type;
@@ -40,9 +48,9 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
     }
 
     public enum State {
-        PENDING, RUNNING, COMPLETED, FAILED;
+        PENDING, RUNNING, COMPLETED, CANCELLED, FAILED;
 
-        public static Set<State> TERMINAL_STATES = EnumSet.of(COMPLETED, FAILED);
+        public static Set<State> TERMINAL_STATES = EnumSet.of(COMPLETED, FAILED, CANCELLED);
 
         public boolean isTerminalState() {
             return TERMINAL_STATES.contains(this);
@@ -94,16 +102,28 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
             state = State.COMPLETED;
 
         } catch (final Throwable t) {
-            logger.error(String.format("Operation %s has failed.", id), t);
-            state = State.FAILED;
-            failureCause = t;
-
+            if (shouldCancel.get()) {
+                logger.warn("Operation %s was cancelled.");
+                state = State.CANCELLED;
+            } else {
+                logger.error(format("Operation %s has failed.", id), t);
+                state = State.FAILED;
+                failureCause = t;
+            }
         } finally {
             completionTime = Instant.now();
         }
     }
 
     protected abstract void run0() throws Exception;
+
+    public void close() {
+        shouldCancel.set(true);
+    }
+
+    public AtomicBoolean getShouldCancel() {
+        return shouldCancel;
+    }
 
     @Override
     public String toString() {
@@ -115,6 +135,7 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
             .add("failureCause", failureCause)
             .add("progress", progress)
             .add("startTime", startTime)
+            .add("shouldCancel", shouldCancel.get())
             .toString();
     }
 }

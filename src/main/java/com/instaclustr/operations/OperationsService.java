@@ -53,6 +53,15 @@ public class OperationsService extends AbstractIdleService {
         executorService.submit(operation);
     }
 
+    public void closeOperation(final UUID operationId) {
+        Optional<Operation> operation = operation(operationId);
+        operation.ifPresent(Operation::close);
+    }
+
+    public void closeOperation(final Operation operation) {
+        operation.close();
+    }
+
     public Operation submitOperationRequest(final OperationRequest request) {
         final OperationFactory operationFactory = operationFactoriesByRequestType.get(request.getClass());
 
@@ -91,7 +100,7 @@ public class OperationsService extends AbstractIdleService {
                 return false;
             }
 
-            if (!type.equals(typeMappings.get(operation.request))) {
+            if (!type.equals(typeMappings.get(operation.request.getClass()))) {
                 return false;
             }
 
