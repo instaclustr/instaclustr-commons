@@ -15,21 +15,30 @@ public class CassandraJMXConnectionInfo {
     public final JMXServiceURL jmxServiceURL;
     public final String trustStore;
     public final String trustStorePassword;
+    public final String keyStore;
+    public final String keyStorePassword;
+    public boolean clientAuth;
 
     public CassandraJMXConnectionInfo() throws MalformedURLException {
-        this(null, null, new JMXServiceURL("service:jmx:rmi:///jndi/rmi://127.0.0.1:7199/jmxrmi"), null, null);
+        this(null, null, new JMXServiceURL("service:jmx:rmi:///jndi/rmi://127.0.0.1:7199/jmxrmi"), null, null, null, null, false);
     }
 
     public CassandraJMXConnectionInfo(final String jmxPassword,
                                       final String jmxUser,
                                       final JMXServiceURL jmxServiceURL,
                                       final String trustStore,
-                                      final String trustStorePassword) {
+                                      final String trustStorePassword,
+                                      final String keyStore,
+                                      final String keyStorePassword,
+                                      final boolean clientAuth) {
         this.jmxPassword = jmxPassword;
         this.jmxUser = jmxUser;
         this.jmxServiceURL = jmxServiceURL;
         this.trustStore = trustStore;
         this.trustStorePassword = trustStorePassword;
+        this.keyStore = keyStore;
+        this.keyStorePassword = keyStorePassword;
+        this.clientAuth = clientAuth;
     }
 
     @Override
@@ -37,8 +46,11 @@ public class CassandraJMXConnectionInfo {
         return MoreObjects.toStringHelper(this)
             .add("jmxServiceURL", jmxServiceURL)
             .add("trustStore", trustStore)
+            .add("keyStore", keyStore)
             .add("jmxUser", jmxUser)
+            .add("clientAuth", clientAuth)
             .add("trustStorePassword", "redacted")
+            .add("keystorePassword", "redacted")
             .add("jmxPassword", "redacted")
             .toString();
     }

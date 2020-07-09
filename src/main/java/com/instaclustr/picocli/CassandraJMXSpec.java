@@ -34,4 +34,13 @@ public class CassandraJMXSpec {
 
     @Option(names = "--jmx-truststore-password", paramLabel = "[PATH]", description = "Password to truststore file for Cassandra")
     public String trustStorePassword;
+
+    @Option(names = "--jmx-keystore", paramLabel = "[STRING]", description = "Path to keystore file for Cassandra")
+    public String keyStore;
+
+    @Option(names = "--jmx-truststore", paramLabel = "[STRING]", description = "Password to keystore file for Cassandra")
+    public String keyStorePassword;
+
+    @Option(names = "--jmx-client-auth", description = "boolean saying if c.s.m.j.ssl.need.client.auth should be set, defaults to false")
+    public boolean jmxClientAuth;
 }

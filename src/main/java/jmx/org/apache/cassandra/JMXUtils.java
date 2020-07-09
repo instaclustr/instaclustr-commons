@@ -14,31 +14,33 @@ public class JMXUtils {
             throw new IllegalArgumentException("passed JMXConnectionInfo is either null or its jmxServiceURL is null.");
         }
 
+        final Map<String, Object> envMap = new HashMap<>();
+
         if (jmxConnectionInfo.jmxPassword != null && jmxConnectionInfo.jmxUser != null) {
-
-            final Map<String, Object> envMap = new HashMap<String, Object>() {{
-                put(JMXConnector.CREDENTIALS, new String[]{
-                    jmxConnectionInfo.jmxUser,
-                    jmxConnectionInfo.jmxPassword});
-            }};
-
-            if (jmxConnectionInfo.trustStore != null && jmxConnectionInfo.trustStorePassword != null) {
-
-                if (!Paths.get(jmxConnectionInfo.trustStore).toFile().exists()) {
-                    throw new IllegalStateException(String.format("Specified truststore file for Cassandra %s does not exist!", jmxConnectionInfo.trustStore));
-                }
-
-                System.setProperty("javax.net.ssl.trustStore", jmxConnectionInfo.trustStore);
-                System.setProperty("javax.net.ssl.trustStorePassword", jmxConnectionInfo.trustStorePassword);
-                System.setProperty("ssl.enable", "true");
-                System.setProperty("com.sun.management.jmxremote.registry.ssl", "true");
-
-                envMap.put("com.sun.jndi.rmi.factory.socket", new SslRMIClientSocketFactory());
-            }
-
-            return JMXConnectorFactory.newJMXConnector(jmxConnectionInfo.jmxServiceURL, envMap);
+            envMap.put(JMXConnector.CREDENTIALS, new String[]{
+                jmxConnectionInfo.jmxUser,
+                jmxConnectionInfo.jmxPassword});
         }
 
-        return JMXConnectorFactory.newJMXConnector(jmxConnectionInfo.jmxServiceURL, null);
+        if (jmxConnectionInfo.trustStore != null && jmxConnectionInfo.trustStorePassword != null) {
+
+            if (!Paths.get(jmxConnectionInfo.trustStore).toFile().exists()) {
+                throw new IllegalStateException(String.format("Specified truststore file for Cassandra %s does not exist!", jmxConnectionInfo.trustStore));
+            }
+
+            System.setProperty("javax.net.ssl.trustStore", jmxConnectionInfo.trustStore);
+            System.setProperty("javax.net.ssl.trustStorePassword", jmxConnectionInfo.trustStorePassword);
+            System.setProperty("javax.net.ssl.keyStore", jmxConnectionInfo.keyStore);
+            System.setProperty("javax.net.ssl.keyStorePassword", jmxConnectionInfo.keyStorePassword);
+            System.setProperty("ssl.enable", "true");
+            System.setProperty("com.sun.management.jmxremote.ssl.need.client.auth", Boolean.toString(jmxConnectionInfo.clientAuth));
+            System.setProperty("com.sun.management.jmxremote.registry.ssl", "true");
+
+            envMap.put("com.sun.jndi.rmi.factory.socket", new SslRMIClientSocketFactory());
+        }
+
+        return envMap.isEmpty() ?
+            JMXConnectorFactory.newJMXConnector(jmxConnectionInfo.jmxServiceURL, null)
+            : JMXConnectorFactory.newJMXConnector(jmxConnectionInfo.jmxServiceURL, envMap);
     }
 }
