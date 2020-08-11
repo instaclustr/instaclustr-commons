@@ -24,6 +24,10 @@ public class CassandraModule extends AbstractModule {
 
     private final CassandraJMXConnectionInfo jmxConnectionInfo;
 
+    public CassandraModule() throws Exception {
+        this(new CassandraJMXConnectionInfo());
+    }
+
     public CassandraModule(final CassandraJMXConnectionInfo jmxConnectionInfo) {
         this.jmxConnectionInfo = jmxConnectionInfo;
     }
