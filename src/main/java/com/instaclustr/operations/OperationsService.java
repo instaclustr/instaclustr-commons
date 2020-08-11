@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,6 +27,13 @@ public class OperationsService extends AbstractIdleService {
     private final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType;
     private final Map<UUID, Operation> operations;
     private final BiMap<Class<? extends OperationRequest>, String> typeMappings;
+
+    public OperationsService(ListeningExecutorService executorService) {
+        operationFactoriesByRequestType = Collections.emptyMap();
+        operations = new HashMap<>();
+        typeMappings = ImmutableBiMap.copyOf(Collections.emptyMap());
+        this.executorService = executorService;
+    }
 
     @Inject
     public OperationsService(final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType,
