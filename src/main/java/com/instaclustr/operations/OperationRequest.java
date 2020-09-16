@@ -1,7 +1,6 @@
 package com.instaclustr.operations;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.instaclustr.guice.GuiceInjectorHolder;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, property = "type", include = As.EXISTING_PROPERTY)
 @JsonTypeIdResolver(OperationRequest.TypeIdResolver.class)
@@ -21,7 +23,10 @@ public abstract class OperationRequest implements Cloneable {
     static class TypeIdResolver extends MapBackedTypeIdResolver<OperationRequest> {
 
         public TypeIdResolver() {
-            super(new HashMap<>());
+            this(GuiceInjectorHolder.INSTANCE.getInjector().getInstance(Key.get(
+                new TypeLiteral<Map<String, Class<? extends OperationRequest>>>() {
+                }
+            )));
         }
 
         @Inject

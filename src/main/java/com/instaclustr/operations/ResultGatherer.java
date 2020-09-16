@@ -13,12 +13,14 @@ public abstract class ResultGatherer<T extends OperationRequest> {
 
     private final Collection<ResultEntry<T>> resultEntries = new ArrayList<>();
 
-    public synchronized void combine(final ResultGatherer<T> anotherGatherer) {
+    public synchronized ResultGatherer<T> combine(final ResultGatherer<T> anotherGatherer) {
         this.resultEntries.addAll(anotherGatherer.resultEntries);
+        return this;
     }
 
-    public synchronized void gather(final Operation<T> operation, final Throwable stageThrowable) {
+    public synchronized ResultGatherer<T> gather(final Operation<T> operation, final Throwable stageThrowable) {
         resultEntries.add(new ResultEntry<>(operation, stageThrowable));
+        return this;
     }
 
     public Collection<ResultEntry<T>> getFinishedOperations() {

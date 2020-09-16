@@ -19,6 +19,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.google.common.base.MoreObjects;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.instaclustr.guice.GuiceInjectorHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +41,10 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
     public static class TypeIdResolver extends MapBackedTypeIdResolver<Operation> {
 
         public TypeIdResolver() {
-            this(new HashMap<>());
+            this(GuiceInjectorHolder.INSTANCE.getInjector().getInstance(Key.get(
+                new TypeLiteral<Map<String, Class<? extends Operation>>>() {
+                }
+            )));
         }
 
         @Inject

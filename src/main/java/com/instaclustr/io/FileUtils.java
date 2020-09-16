@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
@@ -110,5 +111,14 @@ public class FileUtils {
     public static void createOrCleanDirectory(final Path dir) throws Exception {
         createDirectory(dir);
         cleanDirectory(dir);
+    }
+
+    public static Stream<? extends Path> tryListFiles(final Path path) {
+        try {
+            return Files.list(path);
+        } catch (IOException e) {
+            logger.error("Failed to retrieve the file(s)", e);
+            return Stream.empty();
+        }
     }
 }
