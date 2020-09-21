@@ -1,5 +1,8 @@
 package com.instaclustr.operations;
 
+import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
+
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,7 +106,7 @@ public class OperationsService extends AbstractIdleService {
     }
 
     public List<UUID> allOfTypeAndState(final String type, final Operation.State... state) {
-        return filterOperations(operation -> {
+        return getIdsOfOperations(operation -> {
             if (operation.request == null) {
                 return false;
             }
@@ -117,18 +120,23 @@ public class OperationsService extends AbstractIdleService {
     }
 
     public List<UUID> allRunningOfType(final String type) {
-        return filterOperations(operation -> isRunning(operation.id) && type.equals(typeMappings.get(operation.request.getClass())));
+        return getIdsOfOperations(operation -> isRunning(operation.id) && type.equals(typeMappings.get(operation.request.getClass())));
     }
 
     public List<UUID> allRunning() {
-        return filterOperations(operation -> !operation.state.isTerminalState());
+        return getIdsOfOperations(operation -> !operation.state.isTerminalState());
     }
 
     public boolean isRunning(final UUID id) {
-        return filterOperations(value -> !value.state.isTerminalState()).contains(id);
+        return getIdsOfOperations(value -> !value.state.isTerminalState()).contains(id);
     }
 
-    private List<UUID> filterOperations(final Predicate<Operation> predicate) {
+
+    public List<Operation> getOperations(final Predicate<Operation> predicate) {
+        return unmodifiableList(operations().values().stream().filter(predicate).collect(toList()));
+    }
+
+    public List<UUID> getIdsOfOperations(final Predicate<Operation> predicate) {
         final List<UUID> filteredOperations = new ArrayList<>();
 
         for (final Entry<UUID, Operation> operation : operations().entrySet()) {

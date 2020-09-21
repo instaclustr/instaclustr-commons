@@ -6,7 +6,7 @@ public abstract class OperationCoordinator<T extends OperationRequest> {
 
     public abstract ResultGatherer<T> coordinate(Operation<T> operation) throws OperationCoordinatorException;
 
-    public static final class OperationCoordinatorException extends Exception {
+    public static class OperationCoordinatorException extends Exception {
 
         public OperationCoordinatorException(final String message) {
             super(message);
