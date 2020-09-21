@@ -131,7 +131,6 @@ public class OperationsService extends AbstractIdleService {
         return getIdsOfOperations(value -> !value.state.isTerminalState()).contains(id);
     }
 
-
     public List<Operation> getOperations(final Predicate<Operation> predicate) {
         return unmodifiableList(operations().values().stream().filter(predicate).collect(toList()));
     }

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
@@ -59,6 +60,27 @@ public class FileUtils {
 
     public static void cleanDirectory(final Path path) {
         cleanDirectory(path.toFile());
+    }
+
+    public static boolean contains(final Path file, final String text) throws Exception {
+        return new String(Files.readAllBytes(file)).contains(text);
+    }
+
+    public static void replaceOrAppend(final Path file,
+                                       final Function<String, Boolean> replacementTest,
+                                       final Function<String, Boolean> appendingTest,
+                                       final String toReplace,
+                                       final String replacement) throws Exception {
+
+        FileUtils.createFile(file);
+
+        final String contents = new String(Files.readAllBytes(file));
+
+        if (replacementTest.apply(contents)) {
+            replaceInFile(file, toReplace, replacement);
+        } else if (appendingTest.apply(contents)) {
+            appendToFile(file, replacement);
+        }
     }
 
     public static void replaceInFile(final Path file,
