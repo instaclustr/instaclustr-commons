@@ -10,6 +10,8 @@ import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.util.ClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KubernetesApiModule extends AbstractModule {
 
@@ -40,12 +42,26 @@ public class KubernetesApiModule extends AbstractModule {
 
     public static class ClientCoreV1ApiProvider extends CustomCheckedProvider<CoreV1Api, ProvisionException> {
 
+        private static final Logger logger = LoggerFactory.getLogger(InClusterCoreV1ApiProvider.class);
+
+        private boolean initialised = false;
+
+        private CoreV1Api coreV1Api;
+
         @Override
         public CoreV1Api getChecked() throws ProvisionException {
             try {
-                ApiClient client = ClientBuilder.defaultClient();
-                Configuration.setDefaultApiClient(client);
-                return new CoreV1Api();
+                if (!initialised) {
+                    ApiClient client = ClientBuilder.defaultClient();
+                    Configuration.setDefaultApiClient(client);
+
+                    coreV1Api = new CoreV1Api();
+
+                    initialised = true;
+
+                    logger.info("Client CoreV1Api initialized ...");
+                }
+                return coreV1Api;
             } catch (final Exception ex) {
                 throw new ProvisionException("Unable to provision client CoreV1Api object.", ex);
             }
@@ -54,21 +70,34 @@ public class KubernetesApiModule extends AbstractModule {
 
     public static class InClusterCoreV1ApiProvider extends CustomCheckedProvider<CoreV1Api, ProvisionException> {
 
+        private static final Logger logger = LoggerFactory.getLogger(InClusterCoreV1ApiProvider.class);
+
+        private boolean initialised = false;
+
+        private CoreV1Api coreV1Api;
+
         @Override
         public CoreV1Api getChecked() throws ProvisionException {
             try {
-                // loading the in-cluster config, including:
-                //   1. service-account CA
-                //   2. service-account bearer-token
-                //   3. service-account namespace
-                //   4. master endpoints(ip, port) from pre-set environment variables
-                ApiClient client = ClientBuilder.cluster().build();
+                if (!initialised) {
+                    // loading the in-cluster config, including:
+                    //   1. service-account CA
+                    //   2. service-account bearer-token
+                    //   3. service-account namespace
+                    //   4. master endpoints(ip, port) from pre-set environment variables
+                    ApiClient client = ClientBuilder.cluster().build();
 
-                // set the global default api-client to the in-cluster one from above
-                Configuration.setDefaultApiClient(client);
+                    // set the global default api-client to the in-cluster one from above
+                    Configuration.setDefaultApiClient(client);
 
+                    coreV1Api = new CoreV1Api();
+
+                    initialised = true;
+
+                    logger.info("In-cluster CoreV1Api initialized ...");
+                }
                 // the CoreV1Api loads default api-client from global configuration.
-                return new CoreV1Api();
+                return coreV1Api;
             } catch (final Exception ex) {
                 throw new ProvisionException("Unable to provision in-cluster CoreV1Api object.", ex);
             }
