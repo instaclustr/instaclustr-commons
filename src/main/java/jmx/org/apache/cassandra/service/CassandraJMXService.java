@@ -10,6 +10,7 @@ import java.util.Set;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import jmx.org.apache.cassandra.JMXUtils;
+import jmx.org.apache.cassandra.service.cassandra2.Cassandra2StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra3.ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4ColumnFamilyStoreMBean;
@@ -22,6 +23,8 @@ public interface CassandraJMXService {
     <T> T doWithCassandra4StorageServiceMBean(FunctionWithEx<Cassandra4StorageServiceMBean, T> func) throws Exception;
 
     <T> T doWithCassandra3StorageServiceMBean(FunctionWithEx<StorageServiceMBean, T> func) throws Exception;
+
+    <T> T doWithCassandra2StorageServiceMBean(FunctionWithEx<Cassandra2StorageServiceMBean, T> func) throws Exception;
 
     <T> T doWithStorageServiceMBean(FunctionWithEx<StorageServiceMBean, T> func) throws Exception;
 

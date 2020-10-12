@@ -3,6 +3,9 @@ package jmx.org.apache.cassandra.service;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import jmx.org.apache.cassandra.CassandraObjectNames;
+import jmx.org.apache.cassandra.CassandraObjectNames.V2;
+import jmx.org.apache.cassandra.CassandraObjectNames.V4;
+import jmx.org.apache.cassandra.service.cassandra2.Cassandra2StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra3.ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4ColumnFamilyStoreMBean;
@@ -20,13 +23,21 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
     public <T> T doWithCassandra4StorageServiceMBean(final FunctionWithEx<Cassandra4StorageServiceMBean, T> func) throws Exception {
         return doWithMBean(func,
                            Cassandra4StorageServiceMBean.class,
-                           CassandraObjectNames.V4.STORAGE_SERVICE_MBEAN_NAME,
+                           V4.STORAGE_SERVICE_MBEAN_NAME,
                            jmxConnectionInfo);
     }
 
     @Override
     public <T> T doWithCassandra3StorageServiceMBean(final FunctionWithEx<StorageServiceMBean, T> func) throws Exception {
         return doWithStorageServiceMBean(func);
+    }
+
+    @Override
+    public <T> T doWithCassandra2StorageServiceMBean(final FunctionWithEx<Cassandra2StorageServiceMBean, T> func) throws Exception {
+        return doWithMBean(func,
+                           Cassandra2StorageServiceMBean.class,
+                           V2.STORAGE_SERVICE_MBEAN_NAME,
+                           jmxConnectionInfo);
     }
 
     @Override

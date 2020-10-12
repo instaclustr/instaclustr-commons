@@ -5,6 +5,10 @@ import javax.management.ObjectName;
 
 public final class CassandraObjectNames {
 
+    public static class V2 {
+        public static final ObjectName STORAGE_SERVICE_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.db:type=StorageService");
+    }
+
     public static class V3 {
 
         public static final ObjectName GOSSIPER_MBEAN_NAME = ObjectNames.create("org.apache.cassandra.net:type=Gossiper");
