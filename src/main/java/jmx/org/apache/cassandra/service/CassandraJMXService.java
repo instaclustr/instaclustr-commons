@@ -6,6 +6,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
@@ -15,8 +16,13 @@ import jmx.org.apache.cassandra.service.cassandra3.ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4StorageServiceMBean;
+import org.awaitility.Awaitility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface CassandraJMXService {
+
+    static final Logger logger = LoggerFactory.getLogger(CassandraJMXService.class);
 
     // storage service mbean
 
@@ -49,10 +55,30 @@ public interface CassandraJMXService {
 
             jmxConnector.connect();
 
-            MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
+            final MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
 
-            return func.apply(newMBeanProxy(mBeanServerConnection, objectName, mbeanClass));
+            final U proxy = newMBeanProxy(mBeanServerConnection, objectName, mbeanClass);
+
+            waitUntilRegistered(mBeanServerConnection, objectName);
+
+            return func.apply(proxy);
         }
+    }
+
+    default <U> void waitUntilRegistered(final MBeanServerConnection mBeanServerConnection,
+                                         final ObjectName objectName) {
+        Awaitility.await()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .timeout(1, TimeUnit.MINUTES)
+            .until(() -> {
+                boolean registered = mBeanServerConnection.isRegistered(objectName);
+
+                if (!registered) {
+                    logger.info(String.format("Waiting for %s to be registered.", objectName));
+                }
+
+                return registered;
+            });
     }
 
     default <T, U> T doWithMBean(FunctionWithEx<U, T> func,
@@ -78,7 +104,13 @@ public interface CassandraJMXService {
                                                               objectNames.stream().map(ObjectName::getCanonicalName)));
             }
 
-            return func.apply(newMBeanProxy(mBeanServerConnection, objectNames.iterator().next(), mbeanClass));
+            final U proxy = newMBeanProxy(mBeanServerConnection, objectNames.iterator().next(), mbeanClass);
+
+            final ObjectName objectName = objectNames.iterator().next();
+
+            waitUntilRegistered(mBeanServerConnection, objectName);
+
+            return func.apply(proxy);
         }
     }
 
