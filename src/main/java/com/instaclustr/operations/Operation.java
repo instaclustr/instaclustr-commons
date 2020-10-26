@@ -4,10 +4,13 @@ import static java.lang.String.format;
 
 import javax.inject.Inject;
 import java.io.Closeable;
+import java.net.InetAddress;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,6 +56,113 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
         }
     }
 
+    public static class Error {
+
+        public String source;
+        public String message;
+        public Throwable throwable;
+
+        public Error() {
+
+        }
+
+        public Error(final Throwable throwable, final String message, final String source) {
+            this.throwable = throwable;
+            this.message = message;
+            this.source = source;
+        }
+
+        public static Error from(final String source, final Throwable t) {
+            return new Error(t, t.getMessage(), source);
+        }
+
+        public static Error from(final String source, final Throwable t, final String message) {
+            return new Error(t, message, source);
+        }
+
+        public static Error from(final Throwable t, final String message) {
+            try {
+                return new Error(t, message, InetAddress.getLocalHost().getHostName());
+            } catch (final Exception ex) {
+                throw new RuntimeException("Unable to resolve hostname of this node.");
+            }
+        }
+
+        public static Error from(final Throwable t) {
+            return Error.from(t, t.getMessage());
+        }
+
+        public static List<Error> combine(final List<Error> firstErrors, final List<Error> secondErrors) {
+            return new ArrayList<Error>() {{
+                addAll(firstErrors);
+                addAll(secondErrors);
+            }};
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public void setSource(final String source) {
+            this.source = source;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(final String message) {
+            this.message = message;
+        }
+
+        public Throwable getThrowable() {
+            return throwable;
+        }
+
+        public void setThrowable(final Throwable throwable) {
+            this.throwable = throwable;
+        }
+
+        public void report() {
+            if (throwable != null) {
+                logger.error("--- start of error reporting ---");
+                logger.error(toString());
+                throwable.printStackTrace();
+                logger.error("--- end of error reporting ---");
+            } else {
+                logger.info(toString());
+            }
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                .add("source", source)
+                .add("message", message)
+                .add("throwable", throwable)
+                .toString();
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final Error error = (Error) o;
+            return Objects.equals(source, error.source) &&
+                Objects.equals(message, error.message) &&
+                Objects.equals(throwable, error.throwable);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(source, message, throwable);
+        }
+    }
+
     public enum State {
         PENDING, RUNNING, COMPLETED, CANCELLED, FAILED;
 
@@ -71,7 +181,7 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
     public RequestT request;
 
     public State state = State.PENDING;
-    public Throwable failureCause;
+    public List<Error> errors = new ArrayList<>();
     public float progress = 0;
     public Instant startTime, completionTime;
 
@@ -83,18 +193,41 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
                         final UUID id,
                         final Instant creationTime,
                         final State state,
-                        final Throwable failureCause,
+                        final List<Error> errors,
                         final float progress,
                         final Instant startTime,
                         final RequestT request) {
         this.id = id;
         this.creationTime = creationTime;
         this.state = state;
-        this.failureCause = failureCause;
         this.progress = progress;
         this.startTime = startTime;
         this.request = request;
         this.type = type;
+        if (errors != null) {
+            this.errors.addAll(errors);
+        }
+    }
+
+    @JsonIgnore
+    public boolean hasErrors() {
+        return this.errors != null && !this.errors.isEmpty();
+    }
+
+    @JsonIgnore
+    public void addError(final Error error) {
+        if (this.errors != null && error != null) {
+            this.errors.add(error);
+        }
+    }
+
+    @JsonIgnore
+    public void addErrors(final List<Error> errors) {
+        if (this.errors != null && errors != null) {
+            for (final Error e : errors) {
+                addError(e);
+            }
+        }
     }
 
     @Override
@@ -104,7 +237,6 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
 
         try {
             run0();
-            progress = 1;
             state = State.COMPLETED;
 
         } catch (final Throwable t) {
@@ -114,10 +246,26 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
             } else {
                 logger.error(format("Operation %s has failed.", id), t);
                 state = State.FAILED;
-                failureCause = t;
             }
+
+            if (errors == null) {
+                errors = new ArrayList<>();
+            }
+
+            errors.add(Error.from(t));
         } finally {
+            if (this.errors != null && !this.errors.isEmpty()) {
+                state = State.FAILED;
+            }
+            progress = 1;
             completionTime = Instant.now();
+        }
+
+        if (this.errors != null && !this.errors.isEmpty()) {
+            logger.error("Reporting errors for operation {}", id);
+            for (final Error error : errors) {
+                error.report();
+            }
         }
     }
 
@@ -138,9 +286,10 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
             .add("creationTime", creationTime)
             .add("request", request)
             .add("state", state)
-            .add("failureCause", failureCause)
             .add("progress", progress)
             .add("startTime", startTime)
+            .add("completionTime", completionTime)
+            .add("errors", errors)
             .add("shouldCancel", shouldCancel.get())
             .toString();
     }

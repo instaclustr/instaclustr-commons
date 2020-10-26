@@ -4,6 +4,7 @@ import javax.management.remote.JMXServiceURL;
 import java.net.MalformedURLException;
 
 import com.google.common.base.MoreObjects;
+import com.instaclustr.picocli.CassandraJMXSpec;
 
 /**
  * Holder of JMX related information for setting up JMX connection to Cassandra node.
@@ -21,6 +22,17 @@ public class CassandraJMXConnectionInfo {
 
     public CassandraJMXConnectionInfo() throws MalformedURLException {
         this(null, null, new JMXServiceURL("service:jmx:rmi:///jndi/rmi://127.0.0.1:7199/jmxrmi"), null, null, null, null, false);
+    }
+
+    public CassandraJMXConnectionInfo(final CassandraJMXSpec jmxSpec) {
+        this(jmxSpec.jmxPassword,
+             jmxSpec.jmxUser,
+             jmxSpec.jmxServiceURL,
+             jmxSpec.trustStore,
+             jmxSpec.trustStorePassword,
+             jmxSpec.keyStore,
+             jmxSpec.keyStorePassword,
+             jmxSpec.jmxClientAuth);
     }
 
     public CassandraJMXConnectionInfo(final String jmxPassword,
