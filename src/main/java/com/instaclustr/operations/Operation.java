@@ -60,6 +60,8 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
 
         public String source;
         public String message;
+
+        @JsonIgnore
         public Throwable throwable;
 
         public Error() {
@@ -68,7 +70,13 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
 
         public Error(final Throwable throwable, final String message, final String source) {
             this.throwable = throwable;
-            this.message = message;
+
+            if (this.throwable != null && this.throwable.getCause() != null && this.throwable.getCause().getMessage() != null) {
+                this.message = this.throwable.getCause().getMessage();
+            } else {
+                this.message = message;
+            }
+
             this.source = source;
         }
 
