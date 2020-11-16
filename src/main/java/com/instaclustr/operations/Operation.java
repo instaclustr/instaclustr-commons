@@ -38,7 +38,7 @@ public abstract class Operation<RequestT extends OperationRequest> implements Ru
     @JsonIgnore
     private final AtomicBoolean shouldCancel = new AtomicBoolean(false);
 
-    @JsonProperty
+    @JsonIgnore
     public String type;
 
     public static class TypeIdResolver extends MapBackedTypeIdResolver<Operation> {
