@@ -8,6 +8,7 @@ import javax.management.remote.JMXConnector;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Multimap;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import jmx.org.apache.cassandra.JMXUtils;
@@ -39,6 +40,8 @@ public interface CassandraJMXService {
     <T> T doWithCassandra3ColumnFamilyStoreMBean(FunctionWithEx<ColumnFamilyStoreMBean, T> func, String keyspace, String columnFamily) throws Exception;
 
     <T> T doWithCassandra4ColumnFamilyStoreMBean(FunctionWithEx<Cassandra4ColumnFamilyStoreMBean, T> func, String keyspace, String columnFamily) throws Exception;
+
+    Multimap<String, ColumnFamilyStoreMBean> getCFSMBeans() throws Exception;
 
     default <T, U> T doWithMBean(FunctionWithEx<U, T> func,
                                  Class<U> mbeanClass,

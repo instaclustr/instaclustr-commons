@@ -1,10 +1,19 @@
 package jmx.org.apache.cassandra.service;
 
+import javax.management.JMX;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import java.util.Set;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import jmx.org.apache.cassandra.CassandraObjectNames;
 import jmx.org.apache.cassandra.CassandraObjectNames.V2;
 import jmx.org.apache.cassandra.CassandraObjectNames.V4;
+import jmx.org.apache.cassandra.JMXUtils;
 import jmx.org.apache.cassandra.service.cassandra2.Cassandra2StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra3.ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
@@ -65,6 +74,30 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
                            Cassandra4ColumnFamilyStoreMBean.class,
                            getColumnFamilyMBeanObjectNameQuery(keyspace, columnFamily),
                            jmxConnectionInfo);
+    }
+
+    @Override
+    public Multimap<String, ColumnFamilyStoreMBean> getCFSMBeans() throws Exception {
+
+        Multimap<String, ColumnFamilyStoreMBean> cfsMBeans = HashMultimap.create();
+
+        try (JMXConnector jmxConnector = JMXUtils.getJmxConnector(jmxConnectionInfo)) {
+
+            jmxConnector.connect();
+
+            final MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
+
+            final ObjectName query = new ObjectName("org.apache.cassandra.db:type=ColumnFamilies,*");
+            final Set<ObjectName> cfObjects = mBeanServerConnection.queryNames(query, null);
+
+            for (final ObjectName name : cfObjects) {
+                String keyspace = name.getKeyProperty("keyspace");
+                ColumnFamilyStoreMBean cfsProxy = JMX.newMBeanProxy(mBeanServerConnection, name, ColumnFamilyStoreMBean.class);
+                cfsMBeans.put(keyspace, cfsProxy);
+            }
+
+            return cfsMBeans;
+        }
     }
 
     @Override
