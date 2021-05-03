@@ -59,7 +59,7 @@ public class KubernetesApiModule extends AbstractModule {
 
                     initialised = true;
 
-                    logger.info("Client CoreV1Api initialized ...");
+                    logger.debug("Client CoreV1Api initialized ...");
                 }
                 return coreV1Api;
             } catch (final Exception ex) {
@@ -94,7 +94,7 @@ public class KubernetesApiModule extends AbstractModule {
 
                     initialised = true;
 
-                    logger.info("In-cluster CoreV1Api initialized ...");
+                    logger.debug("In-cluster CoreV1Api initialized ...");
                 }
                 // the CoreV1Api loads default api-client from global configuration.
                 return coreV1Api;

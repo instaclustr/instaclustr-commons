@@ -53,6 +53,6 @@ public abstract class JarManifestVersionProvider implements IVersionProvider {
 
     public static void logCommandVersionInformation(final CommandLine.Model.CommandSpec commandSpec) {
         final Logger logger = LoggerFactory.getLogger(commandSpec.userObject().getClass());
-        logger.info("{} version: {}", commandSpec.name(), Joiner.on(", ").join(commandSpec.version()));
+        logger.debug("{} version: {}", commandSpec.name(), Joiner.on(", ").join(commandSpec.version()));
     }
 }
