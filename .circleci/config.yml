@@ -21,7 +21,7 @@ jobs:
             - ~/.m2
           key: instaclustr-commons-{{ checksum "pom.xml" }}
 
-      - run: mvn clean install
+      - run: mvn clean install -Dcassandra.version=3.11.10
 
       - store_test_results:
           path: ~/instaclustr-commons/target/surefire-reports
