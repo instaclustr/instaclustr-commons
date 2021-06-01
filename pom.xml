@@ -18,7 +18,7 @@
     <validation-api.version>2.0.1.Final</validation-api.version>
     <hibernate-validator.version>6.1.0.Final</hibernate-validator.version>
     <kubernetes.client.java.version>6.0.1</kubernetes.client.java.version>
-    <cassandra.driver.version>4.6.0</cassandra.driver.version>
+    <cassandra.driver.version>4.11.1</cassandra.driver.version>
     <jakarta-el.version>3.0.2</jakarta-el.version>
     <apache.commons.lang3>3.4</apache.commons.lang3>
     <commons-io.version>2.7</commons-io.version>
