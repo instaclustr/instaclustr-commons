@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 public class CassandraModuleTest {
 
-    private static final String CASSANDRA_VERSION = System.getProperty("cassandra.version", "3.11.10");
+    private static final String CASSANDRA_VERSION = System.getProperty("cassandra.version", "3.11.11");
 
     @Inject
     private CassandraJMXConnectionInfo cassandraJMXConnectionInfo;
