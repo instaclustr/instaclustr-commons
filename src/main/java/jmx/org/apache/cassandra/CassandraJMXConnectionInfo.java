@@ -13,6 +13,7 @@ public class CassandraJMXConnectionInfo {
 
     public final String jmxPassword;
     public final String jmxUser;
+    public final String jmxCredentials;
     public final JMXServiceURL jmxServiceURL;
     public final String trustStore;
     public final String trustStorePassword;
@@ -21,12 +22,13 @@ public class CassandraJMXConnectionInfo {
     public boolean clientAuth;
 
     public CassandraJMXConnectionInfo() throws MalformedURLException {
-        this(null, null, new JMXServiceURL("service:jmx:rmi:///jndi/rmi://127.0.0.1:7199/jmxrmi"), null, null, null, null, false);
+        this(null, null, null, new JMXServiceURL("service:jmx:rmi:///jndi/rmi://127.0.0.1:7199/jmxrmi"), null, null, null, null, false);
     }
 
     public CassandraJMXConnectionInfo(final CassandraJMXSpec jmxSpec) {
         this(jmxSpec.jmxPassword,
              jmxSpec.jmxUser,
+             jmxSpec.jmxCredentials,
              jmxSpec.jmxServiceURL,
              jmxSpec.trustStore,
              jmxSpec.trustStorePassword,
@@ -37,6 +39,7 @@ public class CassandraJMXConnectionInfo {
 
     public CassandraJMXConnectionInfo(final String jmxPassword,
                                       final String jmxUser,
+                                      final String jmxCredentials,
                                       final JMXServiceURL jmxServiceURL,
                                       final String trustStore,
                                       final String trustStorePassword,
@@ -45,6 +48,7 @@ public class CassandraJMXConnectionInfo {
                                       final boolean clientAuth) {
         this.jmxPassword = jmxPassword;
         this.jmxUser = jmxUser;
+        this.jmxCredentials = jmxCredentials;
         this.jmxServiceURL = jmxServiceURL;
         this.trustStore = trustStore;
         this.trustStorePassword = trustStorePassword;
@@ -63,6 +67,7 @@ public class CassandraJMXConnectionInfo {
             .add("clientAuth", clientAuth)
             .add("trustStorePassword", "redacted")
             .add("keystorePassword", "redacted")
+            .add("jmxCredentials", jmxCredentials)
             .add("jmxPassword", "redacted")
             .toString();
     }

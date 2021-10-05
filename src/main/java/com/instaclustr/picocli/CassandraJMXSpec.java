@@ -29,6 +29,9 @@ public class CassandraJMXSpec {
     @Option(names = "--jmx-password", paramLabel = "[STRING]", description = "Password for JMX for Cassandra")
     public String jmxPassword;
 
+    @Option(names = "--jmx-credentials", paramLabel = "[PATH]", description = "Path to file with username and password for JMX connection")
+    public String jmxCredentials;
+
     @Option(names = "--jmx-truststore", paramLabel = "[PATH]", description = "Path to truststore file for Cassandra")
     public String trustStore;
 
