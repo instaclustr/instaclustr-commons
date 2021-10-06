@@ -12,7 +12,7 @@
   <url>https://github.com/instaclustr/instaclustr-commons</url>
 
   <properties>
-    <jackson.bom.version>2.9.9</jackson.bom.version>
+    <jackson.bom.version>2.12.2</jackson.bom.version>
     <guice.version>4.2.2</guice.version>
     <picocli.version>4.0.1</picocli.version>
     <validation-api.version>2.0.1.Final</validation-api.version>
