@@ -18,8 +18,8 @@ public abstract class CLIApplication extends JarManifestVersionProvider {
 
     public static int execute(CommandLine commandLine, String... args) {
         return commandLine
-                .setErr(new PrintWriter(System.err))
-                .setOut(new PrintWriter(System.err))
+                .setErr(new PrintWriter(System.err, true))
+                .setOut(new PrintWriter(System.out, true))
                 .setColorScheme(new CommandLine.Help.ColorScheme.Builder().ansi(CommandLine.Help.Ansi.ON).build())
                 .setExecutionExceptionHandler((ex, cmdLine, parseResult) -> {
 
