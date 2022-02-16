@@ -1,7 +1,5 @@
 package com.instaclustr.operations;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,7 +13,7 @@ import com.instaclustr.measure.Time;
 
 public class OperationsModule extends AbstractModule {
 
-    private static final Time DEFAULT_OPERATIONS_EXPIRATION_PERIOD = new Time((long) 1, HOURS);
+    private static final Time DEFAULT_OPERATIONS_EXPIRATION_PERIOD = new Time((long) 1, Time.TimeUnit.HOURS);
 
     private final long operationsExpirationPeriod;
 

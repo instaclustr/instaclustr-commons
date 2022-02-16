@@ -1,7 +1,5 @@
 package com.instaclustr.scheduling;
 
-import java.util.concurrent.TimeUnit;
-
 import com.instaclustr.measure.Time;
 import com.instaclustr.operations.Operation;
 import com.instaclustr.operations.OperationRequest;
@@ -11,7 +9,7 @@ public class SchedulingTest {
 
     @Test
     public void testScheduling() throws Exception {
-        final Time time = new Time(5L, TimeUnit.SECONDS);
+        final Time time = new Time(5L, Time.TimeUnit.SECONDS);
         DaemonScheduler<MyRequest, MyOperation> scheduler = new DaemonScheduler<>(time, () -> new MyOperation(new MyRequest()));
         scheduler.setup();
 

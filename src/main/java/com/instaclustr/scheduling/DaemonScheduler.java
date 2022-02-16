@@ -49,7 +49,7 @@ public class DaemonScheduler<R extends OperationRequest, T extends Operation<R>>
         setup();
 
         scheduledFuture = executorService.scheduleAtFixedRate(() -> {
-            final String nextExecution = Instant.now().plusMillis(rate.asMilliseconds().value).toString();
+            final String nextExecution = Instant.now().plusMillis(rate.asSeconds().toMilliseconds()).toString();
             T operation = operationSupplier.get();
 
             operation.run();
@@ -61,7 +61,7 @@ public class DaemonScheduler<R extends OperationRequest, T extends Operation<R>>
             }
 
             logger.info("Operation will be next executed at " + nextExecution);
-        }, 0, rate.value, rate.unit);
+        }, 0, rate.value, TimeUnit.valueOf(rate.unit.name()));
 
         final Thread t = new Thread(() -> {
             try {

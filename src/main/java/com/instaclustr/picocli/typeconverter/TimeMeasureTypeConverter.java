@@ -1,7 +1,5 @@
 package com.instaclustr.picocli.typeconverter;
 
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.collect.Iterables;
 import com.instaclustr.measure.Time;
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,10 +19,10 @@ public class TimeMeasureTypeConverter extends MeasureConverter implements Comman
             throw new CommandLine.TypeConversionException(String.format("%s is not valid Long", valueAndUnit.getLeft()));
         }
 
-        final TimeUnit timeUnitValue;
+        final Time.TimeUnit timeUnitValue;
 
         try {
-            timeUnitValue = Iterables.getOnlyElement(enumValuesStartingWith(valueAndUnit.getRight(), TimeUnit.class));
+            timeUnitValue = Iterables.getOnlyElement(enumValuesStartingWith(valueAndUnit.getRight(), Time.TimeUnit.class));
         } catch (final Exception ex) {
             throw new CommandLine.TypeConversionException(String.format("%s is not valid TimeUnit", valueAndUnit.getLeft()));
         }
