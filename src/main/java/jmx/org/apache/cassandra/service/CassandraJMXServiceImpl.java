@@ -10,13 +10,15 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
-import jmx.org.apache.cassandra.CassandraObjectNames;
 import jmx.org.apache.cassandra.CassandraObjectNames.V2;
+import jmx.org.apache.cassandra.CassandraObjectNames.V3;
 import jmx.org.apache.cassandra.CassandraObjectNames.V4;
 import jmx.org.apache.cassandra.JMXUtils;
 import jmx.org.apache.cassandra.service.cassandra2.Cassandra2StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra3.ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
+import jmx.org.apache.cassandra.service.cassandra30.Cassandra30ColumnFamilyStoreMBean;
+import jmx.org.apache.cassandra.service.cassandra30.Cassandra30StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4StorageServiceMBean;
 
@@ -42,6 +44,14 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
     }
 
     @Override
+    public <T> T doWithCassandra30StorageServiceMBean(FunctionWithEx<Cassandra30StorageServiceMBean, T> func) throws Exception {
+        return doWithMBean(func,
+                           Cassandra30StorageServiceMBean.class,
+                           V3.STORAGE_SERVICE_MBEAN_NAME,
+                           jmxConnectionInfo);
+    }
+
+    @Override
     public <T> T doWithCassandra2StorageServiceMBean(final FunctionWithEx<Cassandra2StorageServiceMBean, T> func) throws Exception {
         return doWithMBean(func,
                            Cassandra2StorageServiceMBean.class,
@@ -53,7 +63,7 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
     public <T> T doWithStorageServiceMBean(final FunctionWithEx<StorageServiceMBean, T> func) throws Exception {
         return doWithMBean(func,
                            StorageServiceMBean.class,
-                           CassandraObjectNames.V3.STORAGE_SERVICE_MBEAN_NAME,
+                           V3.STORAGE_SERVICE_MBEAN_NAME,
                            jmxConnectionInfo);
     }
 
@@ -62,6 +72,14 @@ public class CassandraJMXServiceImpl implements CassandraJMXService {
                                                         final String keyspace,
                                                         final String columnFamily) throws Exception {
         return doWithMBean(func, ColumnFamilyStoreMBean.class,
+                           getColumnFamilyMBeanObjectNameQuery(keyspace, columnFamily),
+                           jmxConnectionInfo);
+    }
+
+    @Override
+    public <T> T doWithCassandra30ColumnFamilyStoreMBean(FunctionWithEx<Cassandra30ColumnFamilyStoreMBean, T> func, String keyspace, String columnFamily) throws Exception {
+        return doWithMBean(func,
+                           Cassandra30ColumnFamilyStoreMBean.class,
                            getColumnFamilyMBeanObjectNameQuery(keyspace, columnFamily),
                            jmxConnectionInfo);
     }

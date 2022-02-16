@@ -15,6 +15,8 @@ import jmx.org.apache.cassandra.JMXUtils;
 import jmx.org.apache.cassandra.service.cassandra2.Cassandra2StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra3.ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra3.StorageServiceMBean;
+import jmx.org.apache.cassandra.service.cassandra30.Cassandra30ColumnFamilyStoreMBean;
+import jmx.org.apache.cassandra.service.cassandra30.Cassandra30StorageServiceMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4ColumnFamilyStoreMBean;
 import jmx.org.apache.cassandra.service.cassandra4.Cassandra4StorageServiceMBean;
 import org.awaitility.Awaitility;
@@ -31,6 +33,8 @@ public interface CassandraJMXService {
 
     <T> T doWithCassandra3StorageServiceMBean(FunctionWithEx<StorageServiceMBean, T> func) throws Exception;
 
+    <T> T doWithCassandra30StorageServiceMBean(FunctionWithEx<Cassandra30StorageServiceMBean, T> func) throws Exception;
+
     <T> T doWithCassandra2StorageServiceMBean(FunctionWithEx<Cassandra2StorageServiceMBean, T> func) throws Exception;
 
     <T> T doWithStorageServiceMBean(FunctionWithEx<StorageServiceMBean, T> func) throws Exception;
@@ -38,6 +42,8 @@ public interface CassandraJMXService {
     // column family store mbean
 
     <T> T doWithCassandra3ColumnFamilyStoreMBean(FunctionWithEx<ColumnFamilyStoreMBean, T> func, String keyspace, String columnFamily) throws Exception;
+
+    <T> T doWithCassandra30ColumnFamilyStoreMBean(FunctionWithEx<Cassandra30ColumnFamilyStoreMBean, T> func, String keyspace, String columnFamily) throws Exception;
 
     <T> T doWithCassandra4ColumnFamilyStoreMBean(FunctionWithEx<Cassandra4ColumnFamilyStoreMBean, T> func, String keyspace, String columnFamily) throws Exception;
 
