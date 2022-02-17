@@ -17,7 +17,7 @@
     <picocli.version>4.0.1</picocli.version>
     <validation-api.version>2.0.1.Final</validation-api.version>
     <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
-    <kubernetes.client.java.version>6.0.1</kubernetes.client.java.version>
+    <kubernetes.client.java.version>9.0.2</kubernetes.client.java.version>
     <cassandra.driver.version>4.11.1</cassandra.driver.version>
     <jakarta-el.version>3.0.2</jakarta-el.version>
     <apache.commons.lang3>3.4</apache.commons.lang3>
