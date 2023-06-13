@@ -90,6 +90,14 @@ public class CassandraVersion implements Comparable<CassandraVersion> {
         return version.major == 4;
     }
 
+    public static boolean isFive(final CassandraVersion version) {
+        return version.major == 5;
+    }
+
+    public static boolean isNewerOrEqualTo4(final CassandraVersion version) {
+        return version.major >= 4;
+    }
+
     /**
      * Parse a version from a string.
      *

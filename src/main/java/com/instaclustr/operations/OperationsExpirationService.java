@@ -12,17 +12,17 @@ import com.google.inject.name.Named;
 public class OperationsExpirationService extends AbstractScheduledService {
 
     private final long expirationPeriodInSeconds;
-    private final Map<UUID, Operation> operations;
+    private final Map<UUID, Operation<?>> operations;
 
     @Inject
-    public OperationsExpirationService(final @OperationsMap Map<UUID, Operation> operations,
+    public OperationsExpirationService(final @OperationsMap Map<UUID, Operation<?>> operations,
                                        final @Named("operationsExpirationPeriod") long expirationPeriodInSeconds) {
         this.operations = operations;
         this.expirationPeriodInSeconds = expirationPeriodInSeconds;
     }
 
     @Override
-    protected void runOneIteration() throws Exception {
+    protected void runOneIteration() {
         final Instant expirationThreshold = Instant.now().minusSeconds(expirationPeriodInSeconds);
         operations.values().removeIf(value -> value.state.isTerminalState() && value.completionTime != null && value.completionTime.isBefore(expirationThreshold));
     }

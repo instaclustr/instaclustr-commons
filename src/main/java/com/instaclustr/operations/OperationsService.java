@@ -28,7 +28,7 @@ public class OperationsService extends AbstractIdleService {
 
     private final ListeningExecutorService executorService;
     private final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType;
-    private final Map<UUID, Operation> operations;
+    private final Map<UUID, Operation<?>> operations;
     private final BiMap<Class<? extends OperationRequest>, String> typeMappings;
 
     public OperationsService(ListeningExecutorService executorService) {
@@ -40,7 +40,7 @@ public class OperationsService extends AbstractIdleService {
 
     @Inject
     public OperationsService(final Map<Class<? extends OperationRequest>, OperationFactory> operationFactoriesByRequestType,
-                             final @OperationsMap Map<UUID, Operation> operations,
+                             final @OperationsMap Map<UUID, Operation<?>> operations,
                              final ExecutorServiceSupplier executorServiceSupplier,
                              final Map<String, Class<? extends OperationRequest>> typeMappings) {
         this.operationFactoriesByRequestType = operationFactoriesByRequestType;
@@ -59,24 +59,24 @@ public class OperationsService extends AbstractIdleService {
         MoreExecutors.shutdownAndAwaitTermination(executorService, 1, TimeUnit.MINUTES);
     }
 
-    public void submitOperation(final Operation operation) {
+    public void submitOperation(final Operation<?> operation) {
         operations.put(operation.id, operation);
         executorService.submit(operation);
     }
 
     public void closeOperation(final UUID operationId) {
-        Optional<Operation> operation = operation(operationId);
+        Optional<Operation<?>> operation = operation(operationId);
         operation.ifPresent(Operation::close);
     }
 
-    public void closeOperation(final Operation operation) {
+    public void closeOperation(final Operation<?> operation) {
         operation.close();
     }
 
-    public Operation submitOperationRequest(final OperationRequest request) {
+    public Operation<?> submitOperationRequest(final OperationRequest request) {
         final OperationFactory operationFactory = operationFactoriesByRequestType.get(request.getClass());
 
-        final Operation operation = operationFactory.createOperation(request);
+        final Operation<?> operation = operationFactory.createOperation(request);
         operation.type = typeMappings.get(request.getClass());
         operation.request.type = operation.type;
 
@@ -85,11 +85,11 @@ public class OperationsService extends AbstractIdleService {
         return operation;
     }
 
-    public Map<UUID, Operation> operations() {
+    public Map<UUID, Operation<?>> operations() {
         return Collections.unmodifiableMap(operations);
     }
 
-    public Optional<Operation> operation(final UUID id) {
+    public Optional<Operation<?>> operation(final UUID id) {
         return Optional.ofNullable(operations.get(id));
     }
 
@@ -131,14 +131,14 @@ public class OperationsService extends AbstractIdleService {
         return getIdsOfOperations(value -> !value.state.isTerminalState()).contains(id);
     }
 
-    public List<Operation> getOperations(final Predicate<Operation> predicate) {
+    public List<Operation<?>> getOperations(final Predicate<Operation<?>> predicate) {
         return unmodifiableList(operations().values().stream().filter(predicate).collect(toList()));
     }
 
-    public List<UUID> getIdsOfOperations(final Predicate<Operation> predicate) {
+    public List<UUID> getIdsOfOperations(final Predicate<Operation<?>> predicate) {
         final List<UUID> filteredOperations = new ArrayList<>();
 
-        for (final Entry<UUID, Operation> operation : operations().entrySet()) {
+        for (final Entry<UUID, Operation<?>> operation : operations().entrySet()) {
             if (predicate.test(operation.getValue())) {
                 filteredOperations.add(operation.getKey());
             }

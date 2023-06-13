@@ -2,8 +2,8 @@ package com.instaclustr.picocli.typeconverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instaclustr.measure.Time;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TimeTypeConverterTest {
 
