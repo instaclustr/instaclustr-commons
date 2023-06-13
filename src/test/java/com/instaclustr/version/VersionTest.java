@@ -1,6 +1,7 @@
 package com.instaclustr.version;
 
-import org.testng.annotations.Test;
+
+import org.junit.Test;
 
 public class VersionTest {
 

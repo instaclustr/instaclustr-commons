@@ -2,6 +2,7 @@ package com.instaclustr.guice;
 
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -50,7 +51,7 @@ public class Application implements Callable<Void> {
                 logger.error("Service {} failed. Shutting down.", service, service.failureCause());
                 System.exit(1);
             }
-        });
+        }, Executors.newSingleThreadExecutor());
 
         try {
             logger.info("Starting services.");

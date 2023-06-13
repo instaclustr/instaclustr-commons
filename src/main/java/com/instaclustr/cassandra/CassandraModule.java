@@ -9,11 +9,6 @@ import com.instaclustr.cassandra.service.CassandraWaiter;
 import com.instaclustr.cassandra.service.CqlSessionService;
 import com.instaclustr.cassandra.service.DefaultCassandraWaiter;
 import com.instaclustr.cassandra.service.DefaultCqlSessionService;
-import com.instaclustr.cassandra.service.kubernetes.Kubernetes;
-import com.instaclustr.cassandra.service.kubernetes.KubernetesCassandraConfigReader;
-import com.instaclustr.cassandra.service.kubernetes.KubernetesCqlSession;
-import com.instaclustr.cassandra.service.kubernetes.KubernetesCqlSession.KubernetesDriverConfigLoader;
-import com.instaclustr.kubernetes.KubernetesHelper;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import jmx.org.apache.cassandra.service.CassandraJMXService;
@@ -34,14 +29,7 @@ public class CassandraModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        if (KubernetesHelper.isRunningInKubernetes() || KubernetesHelper.isRunningAsClient()) {
-            bind(CqlSessionService.class).to(KubernetesCqlSession.class);
-            bind(DriverConfigLoader.class).annotatedWith(Kubernetes.class).to(KubernetesDriverConfigLoader.class);
-            bind(CassandraConfigReader.class).annotatedWith(Kubernetes.class).to(KubernetesCassandraConfigReader.class);
-        } else {
-            bind(CqlSessionService.class).to(DefaultCqlSessionService.class);
-        }
-
+        bind(CqlSessionService.class).to(DefaultCqlSessionService.class);
         bind(CassandraWaiter.class).to(DefaultCassandraWaiter.class);
     }
 
