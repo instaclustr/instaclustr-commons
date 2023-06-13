@@ -3,7 +3,7 @@ package com.instaclustr.scheduling;
 import com.instaclustr.measure.Time;
 import com.instaclustr.operations.Operation;
 import com.instaclustr.operations.OperationRequest;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class SchedulingTest {
 

@@ -1,6 +1,5 @@
 package com.instaclustr.picocli;
 
-import javax.validation.ValidationException;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
 
@@ -22,13 +21,7 @@ public abstract class CLIApplication extends JarManifestVersionProvider {
                 .setOut(new PrintWriter(System.out, true))
                 .setColorScheme(new CommandLine.Help.ColorScheme.Builder().ansi(CommandLine.Help.Ansi.ON).build())
                 .setExecutionExceptionHandler((ex, cmdLine, parseResult) -> {
-
-                    if (ex instanceof ValidationException) {
-                        return 1;
-                    }
-
                     ex.printStackTrace();
-
                     return 1;
                 })
                 .execute(args);

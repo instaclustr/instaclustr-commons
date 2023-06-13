@@ -36,7 +36,7 @@ public class OperationsModule extends AbstractModule {
 
         // synchronised as this map will be used in both OperationsService and OperationsExpirationService
         // LinkedHashMap as this will preserve order in which they were added
-        bind(new TypeLiteral<Map<UUID, Operation>>() {}).annotatedWith(OperationsMap.class).toInstance(Collections.synchronizedMap(new LinkedHashMap<>()));
+        bind(new TypeLiteral<Map<UUID, Operation<?>>>() {}).annotatedWith(OperationsMap.class).toInstance(Collections.synchronizedMap(new LinkedHashMap<>()));
         bind(Long.class).annotatedWith(Names.named("operationsExpirationPeriod")).toInstance(operationsExpirationPeriod);
     }
 }
