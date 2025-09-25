@@ -3,7 +3,6 @@ package com.instaclustr.operations;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +20,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.inject.Inject;
 import com.instaclustr.threading.Executors;
 import com.instaclustr.threading.Executors.ExecutorServiceSupplier;
 

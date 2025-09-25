@@ -2,7 +2,6 @@ package com.instaclustr.operations;
 
 import static java.lang.String.format;
 
-import javax.inject.Inject;
 import java.io.Closeable;
 import java.net.InetAddress;
 import java.time.Instant;
@@ -22,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.google.common.base.MoreObjects;
+import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.instaclustr.guice.GuiceInjectorHolder;

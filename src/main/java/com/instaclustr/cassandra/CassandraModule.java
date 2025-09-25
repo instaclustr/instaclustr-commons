@@ -1,14 +1,8 @@
 package com.instaclustr.cassandra;
 
-import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.instaclustr.cassandra.service.CassandraConfigReader;
-import com.instaclustr.cassandra.service.CassandraWaiter;
-import com.instaclustr.cassandra.service.CqlSessionService;
-import com.instaclustr.cassandra.service.DefaultCassandraWaiter;
-import com.instaclustr.cassandra.service.DefaultCqlSessionService;
 import com.instaclustr.operations.FunctionWithEx;
 import jmx.org.apache.cassandra.CassandraJMXConnectionInfo;
 import jmx.org.apache.cassandra.service.CassandraJMXService;
@@ -25,12 +19,6 @@ public class CassandraModule extends AbstractModule {
 
     public CassandraModule(final CassandraJMXConnectionInfo jmxConnectionInfo) {
         this.jmxConnectionInfo = jmxConnectionInfo;
-    }
-
-    @Override
-    protected void configure() {
-        bind(CqlSessionService.class).to(DefaultCqlSessionService.class);
-        bind(CassandraWaiter.class).to(DefaultCassandraWaiter.class);
     }
 
     @Singleton
